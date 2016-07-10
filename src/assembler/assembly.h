@@ -18,6 +18,8 @@
 #define FOUND		0
 #define NOTFOUND	-1
 
+//ADDED FOR GITHUB PURPOSE
+
 //Macros for source program related purpose
 #define LABEL_SIZE	7
 #define OPCODE_SIZE	7
