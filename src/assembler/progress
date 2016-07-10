@@ -1,0 +1,17 @@
+Thu Jul  7 00:13:06 IST 2016
+--------------------------------------------------------------------
+- Created a file assembly.c and assembly.h for assembly algorithms and data structures.
+- Modified the functions read_line() and write_line() to be use-able by pass1() and pass2() both.
+- Added 3 new data structures: 
+	- SIC_src_instr: Stores 'label', 'opcode', 'operand' (sread from the input source file)
+	- SIC_int_instr: Stores 'address_of_instruction', 'SIC_src_instr' (to read/written from/to the intermediate file)
+	- SIC_list_instr: Stores 'SIC_int_instr', 'object_code' (to be written to listing file)
+- Added header file for flags: flags.h
+- Added SIC_prog_info structure that holds program information like: start address and length.
+
+Sat Jul  9 00:07:31 IST 2016
+--------------------------------------------------------------------
+- Arranged pass1() and pass2().
+- All variables changed to the standard SIC types in pass1 and pass2.
+- Added new datatype 'SIC_reg' for SIC register.
+

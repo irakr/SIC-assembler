@@ -1,0 +1,14 @@
+﻿SIC ASSEMBLER
+
+DEVELOPER’S GUIDE
+
+
+Introduction
+
+SIC assembler is an assembler for the SIC(Simplified Instructional Computer) assembly language. The SIC machine is a hypothetical machine with most of the fundamental architecture and organization of any real machine accomodated. The SIC has two different versions of itself too. The two versions are:
+	i) SIC(Simplified Instructional Computer)
+	ii) SIC/XE(Simplified Instructional Computer/Extended)
+
+This particular assembler is only designed for the first one which is the basic version. The assembler for SIC/XE will be developed soon.
+
+
