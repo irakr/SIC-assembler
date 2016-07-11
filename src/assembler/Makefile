@@ -18,7 +18,7 @@ pass2.o: pass2.c assembly.h
 	gcc -c pass2.c
 
 clean:
-	rm *.o
-	rm sasm
-	rm *~
-	rm .[a-zA-Z]
+	-rm *.o
+	-rm sasm
+	-rm *~
+	-rm .intermediate .listing .symtab
