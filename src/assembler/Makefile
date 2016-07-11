@@ -1,14 +1,24 @@
-exec: compile
-	echo "------ Executing --------\n"
-	./sasm sum.sic
+#This make file produces the executable assembler program
+OBJECTS = main.o assembly.o pass1.o pass2.o
+SIC_HDR = ../headers/sic.h
 
-compile: main.c
-	echo "Building and compiling source...\n"
-	gcc assembly.c pass1.c pass2.c main.c -o sasm
-	touch compile
+sasm: $(OBJECTS)
+	gcc -o sasm $(OBJECTS)
 
-debug: main.c
-	echo "Compiling source for debug...\n"
-	gcc -g assembly.c pass1.c pass2.c main.c -o sasm
-	touch debug
-	
+main.o: main.c assembly.h
+	gcc -c main.c
+
+assembly.o: assembly.c assembly.h flags.h $(SIC_HDR)
+	gcc -c assembly.c
+
+pass1.o: pass1.c assembly.h
+	gcc -c pass1.c
+
+pass2.o: pass2.c assembly.h
+	gcc -c pass2.c
+
+clean:
+	rm *.o
+	rm sasm
+	rm *~
+	rm .[a-zA-Z]
