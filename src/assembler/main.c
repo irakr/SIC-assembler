@@ -15,7 +15,7 @@
 #define DEBUG	0
 
 //Program info as global variable
-SIC_prog_info program_info;
+SIC_Prog_info program_info;
 
 int assemble(FILE *src_file);
 

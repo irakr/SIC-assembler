@@ -6,7 +6,7 @@
 #define SINGLEQUOTE 0x27	//The symbol '
 #define MAXTRLEN	0x1E	//Max bytes of object codes a text record can hold
 
-extern SIC_prog_info program_info;
+extern SIC_Prog_info program_info;
 
 //Generate address portion of an object by finding operands address from symtab. Also check that address does not croos the limit MAX_ADDR.
 #define generate_objcode_addr(symbol)		uint16_t temp;	\
@@ -25,11 +25,11 @@ void pass2() {
 	int txtrec_ctr; //Text record counter
 	int reswb_f = 0;	//RESW or RESB found flag. A special flag used during object program production by pass2 only
 
-	SIC_addr hex_addr;	//program length is just taken as fixed for now.
-	SIC_reg index = 0x08;	//X = 0000 1000(Just taken)
-	SIC_src_instr src_line;	//Part of intr_line
-	SIC_int_instr intr_line;	//Lines read from intermediate file
-	SIC_list_instr list_line;	//Lines written to listing file
+	SIC_Addr hex_addr;	//program length is just taken as fixed for now.
+	SIC_Register index = 0x08;	//X = 0000 1000(Just taken)
+	SIC_Source_line src_line;	//Part of intr_line
+	SIC_Interm_line intr_line;	//Lines read from intermediate file
+	SIC_Listing_line list_line;	//Lines written to listing file
 	
 	intr_line.instr = &src_line;	//Associate src_line to intr_line for use
 	list_line.instr = &intr_line;	//Associate intr_line to list_line for use
@@ -98,7 +98,7 @@ void pass2() {
 				else if(strstr(intr_line.instr->operand,",X") != (char*)0){	//For indexed addressing, add value of X to address
 					char temp_sym[10]="";
 					//uint16_t temp;
-					SIC_addr temp_addr;
+					SIC_Addr temp_addr;
 					//Extract the symbol(excluding ',X') from the operand field
 					strncpy(temp_sym,intr_line.instr->operand,strcspn(intr_line.instr->operand,",X"));
 					if(search_symtab(temp_sym) == NOTFOUND){

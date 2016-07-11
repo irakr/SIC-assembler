@@ -40,27 +40,27 @@ typedef struct{
 	char label[LABEL_SIZE];
 	char opcode[OPCODE_SIZE];
 	char operand[OPERAND_SIZE];
-} SIC_src_instr;
+} SIC_Source_line;
 
 //Another data structure for SIC instruction to be read/written to intermediate file.(Used by pass1)
 typedef struct{
-	SIC_addr addr;	//Stores the 15-bit address field
-	SIC_src_instr *instr;
-} SIC_int_instr;
+	SIC_Addr addr;	//Stores the 15-bit address field
+	SIC_Source_line *instr;
+} SIC_Interm_line;
 
 //Another data structure for SIC instruction to written to listing file.(Used by pass2)
 typedef struct{
-	SIC_int_instr *instr;	//Portion from the intermediate file.
+	SIC_Interm_line *instr;	//Portion from the intermediate file.
 	char obj_code[OBJCODE_SIZE];	//Object code produced.
-} SIC_list_instr;
+} SIC_Listing_line;
 
 //Data structure for program information.
 typedef struct{
 	char file_name[256];	//Name of source file name(with extension)
 	char prog_name[MAX_NAME_LEN];	//File-name of program
-	SIC_addr start_addr;	//First address of program 
+	SIC_Addr start_addr;	//First address of program 
 	uint16_t prog_len;	//Program length
-} SIC_prog_info;
+} SIC_Prog_info;
 
 /*	Data structure for object program components
 typedef struct{
@@ -77,16 +77,16 @@ int search_symtab(const char *symbol);
 int search_optab(const char *opcode);
 
 /*	This function reads an instruction from the input file	*/
-int read_line_src(FILE *src, SIC_src_instr *buff);
+int read_line_src(FILE *src, SIC_Source_line *buff);
 
 /*	This function writes the examined instruction line to the intermediate file along with memory locations. */
-int write_line_intr(FILE *intr_file, SIC_int_instr *buff);
+int write_line_intr(FILE *intr_file, SIC_Interm_line *buff);
 
 /*	Read Line from intermediate file	*/
-int read_line_intr(FILE *f, SIC_int_instr *buff);
+int read_line_intr(FILE *f, SIC_Interm_line *buff);
 
 /*	Write Line to listing file	*/
-int write_line_list(FILE *f, SIC_list_instr *buff);
+int write_line_list(FILE *f, SIC_Listing_line *buff);
 
 /*	Get hexcode of the 'opcode' from optab	*/
 char *get_hexcode(char *opcode);

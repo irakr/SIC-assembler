@@ -1,9 +1,9 @@
 assembly.c: In function ‘write_line_intr’:
-assembly.c:152:2: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 3 has type ‘SIC_addr’ [-Wformat=]
+assembly.c:152:2: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 3 has type ‘SIC_Addr’ [-Wformat=]
   bytes += fprintf(f,"%04X\t",buff->addr);
   ^
 assembly.c: In function ‘write_line_list’:
-assembly.c:174:2: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 3 has type ‘SIC_addr’ [-Wformat=]
+assembly.c:174:2: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 3 has type ‘SIC_Addr’ [-Wformat=]
   bytes += fprintf(f,"%04X\t",buff->instr->addr);
   ^
 pass1.c: In function ‘pass1’:
@@ -11,7 +11,7 @@ pass1.c:51:3: warning: format ‘%x’ expects argument of type ‘unsigned int 
    sscanf(src_line.operand, "%x", &temp);
    ^
 pass2.c: In function ‘pass2’:
-pass2.c:76:3: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 4 has type ‘SIC_addr’ [-Wformat=]
+pass2.c:76:3: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 4 has type ‘SIC_Addr’ [-Wformat=]
    fprintf(obj_prog, "H^%-6s^%06X^%06X\n", program_info.prog_name, program_info.start_addr, program_info.prog_len);
    ^
 pass2.c:96:6: warning: format ‘%X’ expects argument of type ‘unsigned int *’, but argument 3 has type ‘uint16_t *’ [-Wformat=]
@@ -20,12 +20,9 @@ pass2.c:96:6: warning: format ‘%X’ expects argument of type ‘unsigned int 
 pass2.c:110:6: warning: format ‘%X’ expects argument of type ‘unsigned int *’, but argument 3 has type ‘uint16_t *’ [-Wformat=]
       generate_objcode_addr(temp_sym); //Address of label at temp_sym(not original operand)
       ^
-pass2.c:163:4: warning: format not a string literal and no format arguments [-Wformat-security]
-    sscanf(symval, temp);
-    ^
-pass2.c:186:5: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 3 has type ‘SIC_addr’ [-Wformat=]
+pass2.c:186:5: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 3 has type ‘SIC_Addr’ [-Wformat=]
      fprintf(obj_prog,"T^%06X^",intr_line.addr);
      ^
-pass2.c:238:2: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 3 has type ‘SIC_addr’ [-Wformat=]
+pass2.c:238:2: warning: format ‘%X’ expects argument of type ‘unsigned int’, but argument 3 has type ‘SIC_Addr’ [-Wformat=]
   fprintf(obj_prog,"E^%06X", program_info.start_addr);
   ^

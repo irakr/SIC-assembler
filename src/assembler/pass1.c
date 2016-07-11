@@ -8,17 +8,17 @@
 
 #define SINGLEQUOTE 0x27	//The symbol '
 
-extern SIC_prog_info program_info;
+extern SIC_Prog_info program_info;
 
 
 /*	Pass-1 assembly algorithm	*/
 void pass1(FILE *src_file){
 	FILE *intr_file, *symtab;
-	SIC_src_instr src_line;		//Lines read from source file
-	SIC_int_instr intr_line;	//Lines written to intermediate file
+	SIC_Source_line src_line;		//Lines read from source file
+	SIC_Interm_line intr_line;	//Lines written to intermediate file
 	
-	SIC_word bytes,inc,const_len;
-	SIC_addr locctr;
+	SIC_Integer bytes,inc,const_len;
+	SIC_Addr locctr;
 
 //Macros for writting structs in shortcut
 #define bytes 		(bytes.val)

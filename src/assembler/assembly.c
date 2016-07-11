@@ -9,7 +9,7 @@
 #include "assembly.h"
 #include "flags.h"
 
-//TODO...Change all the addresses and integer data variables to type 'SIC_addr' and 'SIC_word'.
+//TODO...Change all the addresses and integer data variables to standard SIC types.
 
 /*	Search SYMTAB for 'symbol'	*/
 int search_symtab(const char *symbol){
@@ -138,7 +138,7 @@ void insert_txtlen(char *text_rec, int txtrec_ctr){
 }
 
 /*	This function reads an instruction from the input file	*/
-int read_line_src(FILE *f, SIC_src_instr *buff){
+int read_line_src(FILE *f, SIC_Source_line *buff){
 	int bytes = 0,t,temp;	//Keep track of the no. of characters being read from a line of the i/p file. We can use this data later...
 	bytes += ((t=fscanf(f,"%s",buff->label))==EOF) ? 0 : t;
 	bytes += ((t=fscanf(f,"%s",buff->opcode))==EOF) ? 0 : t;
@@ -147,7 +147,7 @@ int read_line_src(FILE *f, SIC_src_instr *buff){
 }
 
 /*	This function writes the examined instruction line to the intermediate file along with memory locations. */
-int write_line_intr(FILE *f, SIC_int_instr *buff){
+int write_line_intr(FILE *f, SIC_Interm_line *buff){
 	int bytes=0;
 	bytes += fprintf(f,"%04X\t",buff->addr);
 	bytes += fprintf(f,"%s\t",buff->instr->label);
@@ -158,7 +158,7 @@ int write_line_intr(FILE *f, SIC_int_instr *buff){
 }
 
 /*	Read Line from intermediate file	*/
-int read_line_intr(FILE *f, SIC_int_instr *buff){
+int read_line_intr(FILE *f, SIC_Interm_line *buff){
 	int bytes = 0,t,temp;
 	bytes += ((t=fscanf(f,"%X",&temp))==EOF) ? 0 : t;
 	buff->addr.val = temp;
@@ -169,7 +169,7 @@ int read_line_intr(FILE *f, SIC_int_instr *buff){
 }
 
 /*	Write Line to listing file	*/
-int write_line_list(FILE *f, SIC_list_instr *buff){
+int write_line_list(FILE *f, SIC_Listing_line *buff){
 	int bytes = 0;
 	bytes += fprintf(f,"%04X\t",buff->instr->addr);
 	bytes += fprintf(f,"\t%s",buff->instr->instr->label);
@@ -189,7 +189,7 @@ int write_line_list(FILE *f, SIC_list_instr *buff){
 /*
 int main(){
 	FILE *input,*symtab,*optab;
-	SIC_src_instr src_line;
+	SIC_Source_line src_line;
 	int locctr;
 	
 	input = fopen("sum.sic","r");
