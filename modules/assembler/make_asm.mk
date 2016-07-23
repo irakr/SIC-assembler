@@ -1,9 +1,15 @@
 #This make file produces the executable assembler program
-OBJECTS = main.o assembly.o pass1.o pass2.o
-SIC_HDR = ../headers/sic.h
 
-sasm: $(OBJECTS)
-	gcc -o sasm $(OBJECTS)
+#Directory for storing the output binary file
+BIN_DIR=../../
+
+#Output file
+SASM=$(BIN_DIR)sasm
+
+OBJECTS = main.o assembly.o pass1.o pass2.o
+
+$(SASM): $(OBJECTS)
+	gcc -o $(SASM) $(OBJECTS)
 
 main.o: main.c assembly.h
 	gcc -c main.c
@@ -21,4 +27,3 @@ clean:
 	-rm *.o
 	-rm sasm
 	-rm *~
-	-rm .intermediate .listing .symtab
