@@ -5,9 +5,11 @@ An assembler emulator for a hypothetical machine called SIC(Simplified Instructi
 Using assembler:
 - Go to the directory modules/assembler/ and run the command:
 	$ make --file=make_asm.mk
-
 - After the build operation, the executable binary file for the assembler module will be available in the directory 'SIC-assembler/bin/'
   which is again inside a directory where you have downloaded the package.
+- Although, the executable must have been already built. So you may not have to perform the above steps if there is a file 'sasm' in
+  the bin/ directory.
+
 
 # How to use
 - Write any program in SIC(not SIC/XE) assembly language first and save it with an extension 'xyz.sic'. Eg: sum.sic

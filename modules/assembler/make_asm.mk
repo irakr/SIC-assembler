@@ -1,7 +1,7 @@
 #This make file produces the executable assembler program
 
 #Directory for storing the output binary file
-BIN_DIR=../../
+BIN_DIR=../../bin/
 
 #Output file
 SASM=$(BIN_DIR)sasm
