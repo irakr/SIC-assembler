@@ -13,20 +13,9 @@ Using assembler:
 
 # How to use
 - Write any program in SIC(not SIC/XE) assembly language first and save it with an extension 'xyz.sic'. Eg: sum.sic
-- If you didn't add the SIC-assembler/bin/ directory in the PATH environment variable then you have to use the full pathname of the
-  assembler executable file(sasm).
+ [NOTE: You have to use a '-' character to indicate an empty field of an instruction. Fields are LABEL, OPCODE, OPERAND.]
+- If you didn't add the SIC-assembler/bin/ directory in the PATH environment variable then you have to use the full pathname of the assembler executable file(sasm).
 - But if you don't want these troubles then you can simply add the SIC-assembler/bin directory to the PATH environment variable.
-- Assuming the scenarios:
-  - Suppose that you have the package in the /home directory.
-  - Suppose that your program(say, sum.sic) is in the /home/documents directory.
-  1) if PATH not set:
-  	To assemble your program, run the command as follows:
-  	    $ /home/SIC-assembler/bin/sasm sum.sic
-  2) if PATH is set:
-  	To assemble your program, run the command as follows:
-  	    $ sasm sum.sic
-  * I hope you will go with the second option.
-  * Anyways, the above mentioned situation is familiar to most linux users, so it must not be a big deal.
 - After assembling, the assembler will produce three important files that we are interested in:
   1) Symbol table named .symtab
   2) Intermediate file named .intermediate
@@ -35,4 +24,5 @@ Using assembler:
   file-manager like 'nautilus'(if appropriate configurations are not done). So, I recommend using CLI to view them. You can simply
   use the ll command to list all files in the directory(including hidden files). You will be able to see those 3 files and check
   them out.
+#
 	THAT's IT FOR NOW !!!!!
