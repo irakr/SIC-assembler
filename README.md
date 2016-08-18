@@ -1,7 +1,7 @@
 # SIC-assembler
 An assembler emulator for a hypothetical machine called SIC(Simplified Instructional Computer)
 
-# How to build
+# How to install
 Using assembler:
 - Go to the directory modules/assembler/ and run the command:
 	$ make --file=make_asm.mk
