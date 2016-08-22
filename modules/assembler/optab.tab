@@ -1,0 +1,77 @@
+# This file defines the opcode table for SIC as well as SIC/XE.
+# This file will only be read once when compiling the assembler on your system. Please make sure that this file is consistent
+# till that time. After the assembler is built, this file can be deleted or corrupted(as you wish).
+# NOTE: 
+#	Any line that doesn't begin with a '#' is considered an instruction entry. So make sure that non-comment lines are strictly
+# 	instruction entries.(Blank lines are simply ignored)
+# -------------------------------------------------------------------------------------------------------------------------------
+
+# Mnemonic	Format	Opcode(HEX)
+
+ADD m		3/4	18
+ADDF m 		3/4	58
+ADDR r1,r2	2	90
+AND m		3/4	40
+CLEAR r1	2	B4
+COMP m		3/4	28
+COMPF m		3/4	88
+COMPR r1,r2	2	A0
+DIV m		3/4	24
+DIVF m		3/4	64
+DIVR r1,r2	2	9C
+FIX		1	C4
+FLOAT		1	C0
+HIO		1	F4
+J m		3/4	3C
+JEQ m		3/4	30
+JGT m		3/4	34
+JLT m		3/4	38
+JSUB m		3/4	48
+LDA m		3/4	00
+LDB m		3/4	68
+LDCH m		3/4	50
+LDF m		3/4	70
+LDL m		3/4	08
+LDS m		3/4	6C
+LDT m		3/4	74
+LDX m		3/4	04
+LPS m		3/4	D0
+MUL m		3/4	20
+MULF m		3/4	60
+MULR r1,r2	2	98
+NORM		1	C8
+OR m		3/4	44
+RD m		3/4	D8
+RMO r1,r2	2	AC
+RSUB		3/4	4C
+SHIFTL r1,n	2	A4
+SHIFTR r1,n	2	A8
+SIO		1	F0
+SSK m		3/4	EC
+STA m		3/4	0C
+STB m		3/4	78
+STCH m		3/4	54
+STF m		3/4	80
+STI m		3/4	D4
+STL m		3/4	14
+STS m		3/4	7C
+STSW m		3/4	E8
+STT m		3/4	84
+STX m		3/4	10
+SUB m		3/4	1C
+SUBF m		3/4	5C
+SUBR r1,r2	2	94
+SVC n		2	B0
+TD m		3/4	E0
+TIO		1	F8
+TIX m		3/4	2C
+TIXR r1		2	B8
+WD m		3/4	DC
+
+################################
+# DESCRIPTIONS:
+# m -> Memory location
+# r -> Register numbers
+# n -> Some integer
+# 3/4 -> Either format-3 or format-4 on an instruction.
+

@@ -24,9 +24,13 @@
 
  * For more information, please refer to <http://unlicense.org>
  */
+
 /*
- *	This is the full implementation of pass-1 of the SIC assembler
+ * pass1.c
+ *
+ * This is the implementation of pass-1 of the SIC assembler.
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,7 +42,7 @@ extern SIC_Prog_info program_info;
 
 
 /*	Pass-1 assembly algorithm	*/
-void pass1(FILE *src_file){
+void pass1(FILE *src_file) {
 	FILE *intr_file, *symtab;
 	SIC_Source_line src_line;		//Lines read from source file
 	SIC_Interm_line intr_line;	//Lines written to intermediate file
@@ -85,7 +89,9 @@ void pass1(FILE *src_file){
 
 	/*	Read rest of the lines	*/	
 	while(strcmp(src_line.opcode,"END")!=0){
-		if(strcmp(src_line.label,".") == 0){	//If comment line
+
+		//If comment line
+		if(strcmp(src_line.label[0], '.') == 0){
 			read_line_src(src_file, &src_line);
 			continue;
 		}

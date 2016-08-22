@@ -24,27 +24,35 @@
 
  * For more information, please refer to <http://unlicense.org>
  */
-/******************************** DEFINITIONS *****************************************/
-/*	Pack 'a' and 'b' considering a holding the higher order bits and b holding
- *	lower order bits of the resulting number
+
+/*
+ * optab.h
+ *
+ * Contains runtime optab data structured. The optab defined in this file is a hash table.
  */
-#include "packing.h"
 
-u_char pack(u_char a,u_char b){
-	u_char result;
-	//a and b should not be larger than 0x0f or 00001111b
-	if((a > 0x0f) || (b > 0x0f))
-		return (u_char)-1;
-	result = a << 4;
-	result += b;
-	return result;
-}
+#include <stdint.h>
+#include "assembly.h"
+#include "flags.h"
 
-/* Unpack 'a' into two separate u_characters and return them as malloced array of size 2 */
-u_char *unpack(u_char a){
-	u_char *result = (u_char*)calloc(2,sizeof(u_char));
-	result[1] = a & 0x0f;	//Lower byte
-	result[0] = a & 0xf0;	//Higher byte
-	result[0] >>= 4;
-	return result;
-}
+#ifndef OPTAB_H
+#define OPTAB_H
+
+
+//Table of opcodes
+typedef struct {
+	unsigned char *mnemonic, *format, *opcode;
+} SIC_Optab;
+
+//Runtime optab table
+SIC_Optab *optab;
+
+int16_t tab_size;	//Default = 59
+
+//Generates the 'SIC_Optab optab' table from the file 'optab.tab'
+void build_optab();
+
+//Validates and returns the instruction format using optab.
+SIC_InstnType validate(SIC_Source_line*);
+
+#endif

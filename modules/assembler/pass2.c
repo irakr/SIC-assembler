@@ -24,6 +24,13 @@
 
  * For more information, please refer to <http://unlicense.org>
  */
+ 
+/*
+ * pass2.c
+ *
+ * This is the implementation of pass-2 of the SIC assembler.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

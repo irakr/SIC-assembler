@@ -24,6 +24,7 @@
 
  * For more information, please refer to <http://unlicense.org>
  */
+
 /*
  *	assembly.h
  *
@@ -40,18 +41,18 @@
 #ifndef ASSEMBLY_H_
 #define ASSEMBLY_H_
 
-//Macros to determine whether symbol or operand or anything else is found in their appropriate files or not.
+// Macros to determine whether symbol or operand or anything else is found in their appropriate files or not.
 #define FOUND		0
 #define NOTFOUND	-1
 
-//ADDED FOR GITHUB PURPOSE
+// ADDED FOR GITHUB PURPOSE
 
-//Macros for source program related purpose
+// Macros for source program related purpose
 #define LABEL_SIZE	7
 #define OPCODE_SIZE	7
 #define OPERAND_SIZE	7
 #define OBJCODE_SIZE	10
-
+#define MAX_LINE_SIZE	128	//Max no of characters per source line
 #define MAX_NAME_LEN	7
 
 /*	Macros for object program
@@ -60,27 +61,27 @@
 #define END_SIZE
 */
 
-//A date structure for a single SIC(Not SIC/XE) instruction read from the source file.(Used by pass1, but can be a sub-structure within
-//another structure)
+// A data structure for a single SIC(Not SIC/XE) instruction read from the source file.(Used by pass1, but can be a sub-structure within
+// another structure)
 typedef struct{
 	char label[LABEL_SIZE];
 	char opcode[OPCODE_SIZE];
 	char operand[OPERAND_SIZE];
 } SIC_Source_line;
 
-//Another data structure for SIC instruction to be read/written to intermediate file.(Used by pass1)
+// Another data structure for SIC instruction to be read/written to intermediate file.(Used by pass1)
 typedef struct{
 	SIC_Addr addr;	//Stores the 15-bit address field
 	SIC_Source_line *instr;
 } SIC_Interm_line;
 
-//Another data structure for SIC instruction to written to listing file.(Used by pass2)
+// Another data structure for SIC instruction to written to listing file.(Used by pass2)
 typedef struct{
 	SIC_Interm_line *instr;	//Portion from the intermediate file.
 	char obj_code[OBJCODE_SIZE];	//Object code produced.
 } SIC_Listing_line;
 
-//Data structure for program information.
+// Data structure for program information.
 typedef struct{
 	char file_name[256];	//Name of source file name(with extension)
 	char prog_name[MAX_NAME_LEN];	//File-name of program

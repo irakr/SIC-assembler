@@ -24,27 +24,50 @@
 
  * For more information, please refer to <http://unlicense.org>
  */
-/******************************** DEFINITIONS *****************************************/
-/*	Pack 'a' and 'b' considering a holding the higher order bits and b holding
- *	lower order bits of the resulting number
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "_string.h"
+
+/* Replace all the characters defeined by 'on' with the character 'put' in the string 'str'.
+ * Returns the no of characters replaced.
+ * More than one consecutive white spaces will be replaced by one 'put' only.
  */
-#include "packing.h"
+size_t strput(char *str, char on, char put){	//ALL OK!
+	char *ptr;
+	size_t count=0;
+	
+	for(ptr=str; *ptr; ptr++){
+		if(*ptr == on){
+			*ptr = put;
+			count++;
+			
+			//For white spaces	Ex: "Hello-   World!"
+			if(on == ' '){
+				ptr++;
+				if(*ptr == 0)	//Reached NULL
+					break;
+				char *temp_ptr = ptr;
+				for(; *ptr==' '; ptr++); //Find the next non-space character.
+				if(*ptr=='\0')
+					*temp_ptr = '\0';
+				else
+					memmove((char*)temp_ptr, (char*)ptr, strlen(ptr)+1);
+				ptr = temp_ptr;
+			}
 
-u_char pack(u_char a,u_char b){
-	u_char result;
-	//a and b should not be larger than 0x0f or 00001111b
-	if((a > 0x0f) || (b > 0x0f))
-		return (u_char)-1;
-	result = a << 4;
-	result += b;
-	return result;
+		}
+	}
+	
+	return count;
 }
 
-/* Unpack 'a' into two separate u_characters and return them as malloced array of size 2 */
-u_char *unpack(u_char a){
-	u_char *result = (u_char*)calloc(2,sizeof(u_char));
-	result[1] = a & 0x0f;	//Lower byte
-	result[0] = a & 0xf0;	//Higher byte
-	result[0] >>= 4;
-	return result;
+/*
+int main(){
+	char str[]="Hello   World!   a   as   ";
+	printf("Original str[] = %s\n", str);
+	int c = strput(str, ' ', '\t');
+	printf("%d bytes were replaced.\nNew str[] = '%s'\n", c, str);
+	return 0;
 }
+*/

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo 'Select a text editor:'
+echo '1. Atom'
+echo '2. Gedit'
+echo '3. Emacs'
+echo '4. Gvim'
+echo '5. Vim'
+
+read -p ':> ' choice
+
+if [ $choice -eq '1' ]; then
+	atom *.{c,h} &
+elif [ $choice -eq '2' ]; then
+	gedit *.{c,h} &
+elif [ $choice -eq '3' ]; then
+	emacs *.{c,h} &
+elif [ $choice -eq '4' ]; then
+	gvim *.{c,h} &
+elif [ $choice -eq '5' ]; then
+	vim *.{c,h} &
+else
+	echo 'Wrong option!!!'
+fi
+
+exit

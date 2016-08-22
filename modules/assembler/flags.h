@@ -24,10 +24,23 @@
 
  * For more information, please refer to <http://unlicense.org>
  */
+
 /*
  *	flags.h
  *
  *	This file contains all the flag variables required for the execution of the assembler.
  */
 
+#ifndef FLAGS_H
+#define FLAGS_H
+
 //Error flag
+typedef enum{OK=0x00, EMPTY_OPCODE, INVALID_OPCODE, INVALID_LABEL, DUPLICATE_LABEL, INVALID_OPERAND} SIC_AsmError;
+SIC_AsmError asm_error;
+
+//Flags that indicates what type of instruction has been encountered.
+typedef enum{INVALID=0xff, VALID=0x00, FORM1, FORM2, FORM3, FORM4, FORM0, COMMENT, EMPTY, MAYBE_DIRECTIVE} SIC_InstnType;
+SIC_InstnType instn_type;
+
+#endif
+

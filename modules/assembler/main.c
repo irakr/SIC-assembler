@@ -24,6 +24,7 @@
 
  * For more information, please refer to <http://unlicense.org>
  */
+
 /*
  *	main.c
  *
@@ -32,6 +33,7 @@
  *	This is the main program for the SIC assembler module.
  *	This is a 2-pass assembler.
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

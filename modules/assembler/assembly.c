@@ -31,11 +31,25 @@
  */
 
 #include <stdlib.h>
-#include <string.h>
+//#include <string.h>
+#include "_string.h"
 #include "assembly.h"
 #include "flags.h"
 
 //TODO...Change all the addresses and integer data variables to standard SIC types.
+
+/* Instruction format indicators
+#define FORMAT_0	0	//Simple SIC format
+#define FORMAT_1	1
+#define FORMAT_2	2
+#define FORMAT_3	3
+#define FORMAT_4	4
+
+#define COMMENT		5
+#define EMPTY		6
+*/
+
+static SIC_InstnType formatize(char*, SIC_Source_line*);	//Local function	
 
 /*	Search SYMTAB for 'symbol'	*/
 int search_symtab(const char *symbol){
@@ -142,34 +156,57 @@ char *get_symbol_addr(char *symbol){
 	return (char*)0;
 }
 
-//Insert the length of text record to the ^^ portion
-//Divide the text_rec into two parts,insert the length, and then rejoin them. Maybe we can strtok()...but for now let stick with this.
-//Eg: T^004000^-^0410024^0010024^184021^2C10021^384006^0C10027^4C0000^00000
-void insert_txtlen(char *text_rec, int txtrec_ctr){
-	char *temp_txtrec_r,temp_txtrec_l[100]="",temp_ctr[5]="";	//=(char*)calloc(50,sizeof(char));
-	strncpy(temp_txtrec_l, text_rec, strcspn(text_rec,"-"));	//Left half
-	//printf("%s\n", temp_txtrec_l);
-	temp_txtrec_r = strstr(text_rec, "-") + 1;	//Right half
-	//printf("%s\n", temp_txtrec_r);
-	sprintf(temp_ctr, "%02d", txtrec_ctr);
-	//printf("%s\n", temp_ctr);
-	strcat(temp_txtrec_l, temp_ctr);
-	//printf("%s\n", temp_txtrec_l);
-	strcat(temp_txtrec_l, temp_txtrec_r);
-	//printf("%s\n", temp_txtrec_l);
-	//strcpy(text_rec, "");
-	strcpy(text_rec, temp_txtrec_l);
-	//printf("%s\n", text_rec);
-	//@return text_rec;			
+/*	This function reads an instruction from the input file	*/
+int read_line_src(FILE *f, SIC_Source_line *srcline){
+	int bytes = 0, t, temp;		//Keep track of the no. of characters being read from a line of the i/p file. We can use this data later...
+	char line[MAX_LINE_SIZE]="";
+	
+	if(!fgets(line, MAX_LINE_SIZE, f))
+		return -1;
+	line[strlen(line)-1] = '\0';
+	strput(line, ' ', '\t');	//Replace all white spaces with single tabs
+	
+	printf("%s\t", line);
+	
+	//Tokenize into appropriate format
+	instn_type = formatize(line, srcline);
+	if(instn_type == INVALID)
+		return -1;
+	
+	return 0;	//Correctly read and formatted(No base-level syntactical error)
 }
 
-/*	This function reads an instruction from the input file	*/
-int read_line_src(FILE *f, SIC_Source_line *buff){
-	int bytes = 0,t,temp;	//Keep track of the no. of characters being read from a line of the i/p file. We can use this data later...
-	bytes += ((t=fscanf(f,"%s",buff->label))==EOF) ? 0 : t;
-	bytes += ((t=fscanf(f,"%s",buff->opcode))==EOF) ? 0 : t;
-	bytes += ((t=fscanf(f,"%s",buff->operand))==EOF) ? 0 : t;
-	return bytes;	//Returning 0 probably means EOF has reached or no instructions were provided.
+/*	Tokenize the given line and formatize it to an appropriate format. [Local to read_line_src()]	*/
+static SIC_InstnType formatize(char *line, SIC_Source_line *srcline){
+
+	if((line==NULL) || (*line==0))
+		return EMPTY;	//Empty line
+	
+	char *temp;
+	
+	if(*line == '\t')	//If label field is empty
+		strcpy(srcline->label, "");
+	else if(*line == '.')	//Comment line
+		return COMMENT;
+	else
+		strcpy(srcline->label, (temp=strtok(line, "\t")));	//Label
+	
+	//Opcode field is always non-empty. Otherwise it is an error.
+	if(srcline->label[0] != 0)	//Opcode
+		strcpy(srcline->opcode, ((temp=strtok(NULL, "\t"))?temp:""));
+	else
+		strcpy(srcline->opcode, ((temp=strtok(line, "\t"))?temp:""));
+	if(srcline->opcode[0] == '\0') {
+		asm_error = EMPTY_OPCODE;
+		return INVALID;
+	}
+	
+	strcpy(srcline->operand, ((temp=strtok(NULL, "\t"))?temp:""));	//Operand
+	//Now whether the operand is an operand address or a register or just a comment word will be decided by the format.
+	
+	//Words after the operand field are considered to be the part of comment. So skip processing those.
+	
+	return VALID;
 }
 
 /*	This function writes the examined instruction line to the intermediate file along with memory locations. */
@@ -212,29 +249,48 @@ int write_line_list(FILE *f, SIC_Listing_line *buff){
 	return bytes;
 }
 
+//Insert the length of text record to the ^^ portion
+//Divide the text_rec into two parts,insert the length, and then rejoin them. Maybe we can strtok()...but for now let stick with this.
+//Eg: T^004000^-^0410024^0010024^184021^2C10021^384006^0C10027^4C0000^00000
+void insert_txtlen(char *text_rec, int txtrec_ctr){
+	char *temp_txtrec_r,temp_txtrec_l[100]="",temp_ctr[5]="";	//=(char*)calloc(50,sizeof(char));
+	strncpy(temp_txtrec_l, text_rec, strcspn(text_rec,"-"));	//Left half
+	//printf("%s\n", temp_txtrec_l);
+	temp_txtrec_r = strstr(text_rec, "-") + 1;	//Right half
+	//printf("%s\n", temp_txtrec_r);
+	sprintf(temp_ctr, "%02d", txtrec_ctr);
+	//printf("%s\n", temp_ctr);
+	strcat(temp_txtrec_l, temp_ctr);
+	//printf("%s\n", temp_txtrec_l);
+	strcat(temp_txtrec_l, temp_txtrec_r);
+	//printf("%s\n", temp_txtrec_l);
+	//strcpy(text_rec, "");
+	strcpy(text_rec, temp_txtrec_l);
+	//printf("%s\n", text_rec);
+	//@return text_rec;			
+}
 /*
 int main(){
 	FILE *input,*symtab,*optab;
 	SIC_Source_line src_line;
 	int locctr;
 	
-	input = fopen("sum.sic","r");
-	symtab = fopen(".symtab","w");
-	optab = fopen("optab","r");
+	input = fopen("test.sic","r");
+	//symtab = fopen(".symtab","w");
+	//optab = fopen("optab","r");
 	
 	locctr = 0;
 	while(1){
 		read_line_src(input, &src_line);
-		if(strcmp(src_line.label,"-")!=0)
-			fprintf(symtab,"%s\t%X\n",src_line.label,locctr);
-		fflush(symtab);
+		//if(strcmp(src_line.label,"-")!=0)
+		//	fprintf(symtab,"%s\t%X\n",src_line.label,locctr);
+		//fflush(symtab);
 		if(feof(input))
 			break;
 	}
 	
 	fclose(input);
-	fclose(symtab);
-	fclose(optab);
+	//fclose(symtab);
+	//fclose(optab);
 	return 0;
-}
-*/
+}  */

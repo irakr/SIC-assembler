@@ -1,0 +1,9 @@
+1) Modify the function read_line_src() in the file assembly.c:
+ - Change the reading procedure of an instruction statement/line from the source file.
+ - Using fgets() to read a whole line instead of using fscanf() will be a better way.
+   Although, complexity might increase using fgets(), but the actual way to read a statement
+   will be achieved more easily than using fscanf(). Using '-' for an empty section of a
+   statement can be avoided.
+ - After reading a statement, it can be then broken into tokens and compared against the possible
+   formats conforming to the SIC or SIC/XE standards, i.e., format-1, format-2, etc.
+ - Similar changes may also be made in other read and write functions in the file assembly.c.
