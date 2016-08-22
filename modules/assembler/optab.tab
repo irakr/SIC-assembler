@@ -1,6 +1,6 @@
 # This file defines the opcode table for SIC as well as SIC/XE.
 # This file will only be read once when compiling the assembler on your system. Please make sure that this file is consistent
-# till that time. After the assembler is built, this file can be deleted or corrupted(as you wish).
+# till that time. After the assembler is compiled, this file can be deleted or corrupted(as you wish).
 # NOTE: 
 #	Any line that doesn't begin with a '#' is considered an instruction entry. So make sure that non-comment lines are strictly
 # 	instruction entries.(Blank lines are simply ignored)
