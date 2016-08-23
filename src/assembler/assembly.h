@@ -36,7 +36,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "../headers/sic.h"
+#include "../sic.h"
 
 #ifndef ASSEMBLY_H_
 #define ASSEMBLY_H_
@@ -55,6 +55,9 @@
 #define MAX_LINE_SIZE	128	//Max no of characters per source line
 #define MAX_NAME_LEN	7
 
+//Make it '1' for debug codes to be generated.
+#define DEBUG	1
+
 /*	Macros for object program
 #define HEADER_SIZE	
 #define TEXT_SIZE
@@ -63,26 +66,26 @@
 
 // A data structure for a single SIC(Not SIC/XE) instruction read from the source file.(Used by pass1, but can be a sub-structure within
 // another structure)
-typedef struct{
+typedef struct {
 	char label[LABEL_SIZE];
 	char opcode[OPCODE_SIZE];
 	char operand[OPERAND_SIZE];
 } SIC_Source_line;
 
 // Another data structure for SIC instruction to be read/written to intermediate file.(Used by pass1)
-typedef struct{
+typedef struct {
 	SIC_Addr addr;	//Stores the 15-bit address field
 	SIC_Source_line *instr;
 } SIC_Interm_line;
 
 // Another data structure for SIC instruction to written to listing file.(Used by pass2)
-typedef struct{
+typedef struct {
 	SIC_Interm_line *instr;	//Portion from the intermediate file.
 	char obj_code[OBJCODE_SIZE];	//Object code produced.
 } SIC_Listing_line;
 
 // Data structure for program information.
-typedef struct{
+typedef struct {
 	char file_name[256];	//Name of source file name(with extension)
 	char prog_name[MAX_NAME_LEN];	//File-name of program
 	SIC_Addr start_addr;	//First address of program 
@@ -104,19 +107,16 @@ int search_symtab(const char *symbol);
 int search_optab(const char *opcode);
 
 /*	This function reads an instruction from the input file	*/
-int read_line_src(FILE *src, SIC_Source_line *buff);
+int read_line_src(SIC_Source_line *buff);
 
 /*	This function writes the examined instruction line to the intermediate file along with memory locations. */
-int write_line_intr(FILE *intr_file, SIC_Interm_line *buff);
+int write_line_intr(SIC_Interm_line *buff);
 
 /*	Read Line from intermediate file	*/
-int read_line_intr(FILE *f, SIC_Interm_line *buff);
+int read_line_intr(SIC_Interm_line *buff);
 
 /*	Write Line to listing file	*/
-int write_line_list(FILE *f, SIC_Listing_line *buff);
-
-/*	Get hexcode of the 'opcode' from optab	*/
-char *get_hexcode(char *opcode);
+int write_line_list(SIC_Listing_line *buff);
 
 /*	Get address of 'symbol' from symtab	*/
 char *get_symbol_addr(char *symbol);
@@ -128,7 +128,7 @@ char *get_symbol_addr(char *symbol);
 void insert_txtlen(char *text_rec, int txtrec_ctr);
 
 /*	Pass-1 procedure function	*/
-void pass1(FILE *src_file);
+void pass1();
 
 /*	Pass-2 procedure function	*/
 void pass2();

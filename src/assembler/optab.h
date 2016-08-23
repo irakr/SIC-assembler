@@ -41,7 +41,7 @@
 
 //Table of opcodes
 typedef struct {
-	unsigned char *mnemonic, *format, *opcode;
+	unsigned char *mnemonic, *format, *hexcode;
 } SIC_Optab;
 
 //Runtime optab table
@@ -54,5 +54,8 @@ void build_optab();
 
 //Validates and returns the instruction format using optab.
 SIC_InstnType validate(SIC_Source_line*);
+
+//Get hexcode for 'opcode' from OPTAB
+char *get_hexcode(char *opcode);
 
 #endif

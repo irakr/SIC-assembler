@@ -40,6 +40,9 @@
 #define MAXTRLEN	0x1E	//Max bytes of object codes a text record can hold
 
 extern SIC_Prog_info program_info;
+extern FILE *src_file;
+extern FILE *inter_file;
+extern FILE *list_file, *obj_prog_file;
 
 //Generate address portion of an object by finding operands address from symtab. Also check that address does not croos the limit MAX_ADDR.
 #define generate_objcode_addr(symbol)		uint16_t temp;	\
@@ -52,7 +55,7 @@ extern SIC_Prog_info program_info;
 
 /*	Pass-2 assembly algorithm	*/
 void pass2() {
-	FILE *intr_file, *listing, *obj_prog, *src_file;
+
 	char symval[10]="", obj_code[10]="";
 	char *objprog_name, text_rec[81]="";	//81bytes is enough to hold a text record. 
 	int txtrec_ctr; //Text record counter
@@ -76,22 +79,23 @@ void pass2() {
 		fprintf(stderr,"\nError: Could not open source file\n");
 		exit(1);
 	}
-	if((intr_file = fopen(".intermediate","r")) == NULL){
+	if((inter_file = fopen(".intermediate","r")) == NULL){
 		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
 		fprintf(stderr,"\nError: Could not load intermediate file\n");
 		exit(1);
 	}
-	if((listing = fopen(".listing","w")) == NULL){	//Assembly listing file
+	if((list_file = fopen(".listing","w")) == NULL){	//Assembly listing file
 		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
 		fprintf(stderr,"Error: Cannot open listing file\n");
 		exit(1);
 	}
 	
+	//Generate object file name
 	objprog_name = (char*)calloc(strlen(program_info.file_name),sizeof(char));
 	strncpy(objprog_name, program_info.file_name, strcspn(program_info.file_name, "."));
 	strcat(objprog_name,".o");
 	//Object program file
-	if((obj_prog = fopen(objprog_name,"w")) == NULL){
+	if((obj_prog_file = fopen(objprog_name,"w")) == NULL){
 		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
 		fprintf(stderr,"\nError: Could not open object file\n");
 		exit(1);
@@ -99,27 +103,27 @@ void pass2() {
 	//reset_flags();	//Reset all flags
 	
 	//Read first line of intermediate file
-	read_line_intr(intr_file, &intr_line);
+	read_line_intr(&intr_line);
 	
 	//First startement of the source program
 	if(strcmp(intr_line.instr->opcode,"START")==0){
-		write_line_list(listing, &list_line);
+		write_line_list(&list_line);
 
 		//Write object program header record
-		fprintf(obj_prog, "H^%-6s^%06X^%06X\n", program_info.prog_name, program_info.start_addr, program_info.prog_len);
+		fprintf(obj_prog_file, "H^%-6s^%06X^%06X\n", program_info.prog_name, program_info.start_addr, program_info.prog_len);
 
-		read_line_intr(intr_file, &intr_line);
+		read_line_intr(&intr_line);
 	}
 	
 	//Initialize first text record
-	fprintf(obj_prog,"T^%06X^",intr_line.addr.val);
-	fflush(obj_prog);
+	fprintf(obj_prog_file,"T^%06X^",intr_line.addr.val);
+	fflush(obj_prog_file);
 	
 	//Scan intermediate file till 'END' statement or End of file(EOF)
-	while((strcmp(intr_line.instr->opcode,"END")!=0) && !feof(intr_file)){
+	while((strcmp(intr_line.instr->opcode,"END")!=0) && !feof(inter_file)){
 		//If comment line
 		if(strcmp(intr_line.instr->label,".") == 0){
-			read_line_intr(intr_file, &intr_line);
+			read_line_intr(&intr_line);
 			continue;
 		}
 		//Else parse line....
@@ -208,15 +212,15 @@ void pass2() {
 		//Text record production begins here...
 		if((txtrec_ctr < MAXTRLEN) && (strcmp(intr_line.instr->opcode,"RESW") && strcmp(intr_line.instr->opcode,"RESB"))){
 			if(reswb_f){	//if RESW or RESB was last found then new text record should begin
-				fprintf(obj_prog,"%02X",txtrec_ctr);
-				fprintf(obj_prog,"%s\n",text_rec);
+				fprintf(obj_prog_file,"%02X",txtrec_ctr);
+				fprintf(obj_prog_file,"%s\n",text_rec);
 				//Reset text_rec string
 				strcpy(text_rec,"");
 				txtrec_ctr = 0x0;
 				//uint16_t temp;
 				//sscanf(intr_line.addr,"%X",&temp);
 				//hex_addr = temp;
-				fprintf(obj_prog,"T^%06X^",intr_line.addr);
+				fprintf(obj_prog_file,"T^%06X^",intr_line.addr);
 				reswb_f = 0;
 			}
 
@@ -234,15 +238,15 @@ void pass2() {
 		else{	//no more place in the current text record.Create a new one
 			//Time to flush the generated text_rec string and prepare for a new text record, if any
 			//Insert the 'length' and 'object codes' fields of the currently ending text record
-			fprintf(obj_prog,"%02X",txtrec_ctr);
-			fprintf(obj_prog,"%s\n",text_rec);
+			fprintf(obj_prog_file,"%02X",txtrec_ctr);
+			fprintf(obj_prog_file,"%s\n",text_rec);
 			//Reset text_rec string
 			strcpy(text_rec,"");
 			txtrec_ctr = 0x0;
 			//uint16_t temp;
 			//sscanf(intr_line.addr,"%X",&temp);
 			hex_addr = intr_line.addr.val;
-			fprintf(obj_prog,"T^%06X^",hex_addr);
+			fprintf(obj_prog_file,"T^%06X^",hex_addr);
 			if(strcmp(obj_code,"") != 0){
 				strcat(text_rec,"^");
 				strcat(text_rec,obj_code);
@@ -251,27 +255,27 @@ void pass2() {
 		}
 			
 		//Write to assembly listing file
-		write_line_list(listing, &list_line);
+		write_line_list(&list_line);
 		
 		//Read next line
-		read_line_intr(intr_file, &intr_line);
+		read_line_intr(&intr_line);
 		
 	}//while(END)
 	
 	//Insert the left over text record, if any
 	if(strcmp(text_rec,"") != 0){
 		//Insert the 'length' and 'object codes' fields of the currently ending text record
-		fprintf(obj_prog,"%02X",txtrec_ctr);
-		fprintf(obj_prog,"%s\n",text_rec);
+		fprintf(obj_prog_file,"%02X",txtrec_ctr);
+		fprintf(obj_prog_file,"%s\n",text_rec);
 	}
 	//Write last line to assembly listing file	
-	write_line_list(listing, &list_line);
+	write_line_list(&list_line);
 	
 	//Write the END record
-	fprintf(obj_prog,"E^%06X", program_info.start_addr);
+	fprintf(obj_prog_file,"E^%06X", program_info.start_addr);
 
 	//Close all files
-	fclose(listing);
-	fclose(intr_file);
-	fclose(obj_prog);
+	fclose(list_file);
+	fclose(inter_file);
+	fclose(obj_prog_file);
 }

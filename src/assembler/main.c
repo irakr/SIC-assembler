@@ -37,23 +37,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "assembly.h"
+#include "optab.h"
 
-//Make it '1' for debug codes to be generated.
-#define DEBUG	0
+#if DEBUG
+#include <unistd.h>
+#endif
 
-//Program info as global variable
-SIC_Prog_info program_info;
+#define INIT_ASM()	build_optab();
 
-int assemble(FILE *src_file);
+/*	All global data		*/
+SIC_Prog_info program_info;	//Program info as global variable
+
+FILE *src_file;
+FILE *inter_file;
+FILE *list_file, *obj_prog_file;
+
+int assemble();
 
 int main(int argc, char *argv[]){
-	FILE *src_file;
+	
 	
 	/*	DEBUG	*/
 	#if DEBUG
 	printf("Current working directory: %s\n", (char*)get_current_dir_name());	//print working directory
 	#endif
+	
+	INIT_ASM();
 	
 	if(argc <= 1){
 		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
@@ -71,16 +82,16 @@ int main(int argc, char *argv[]){
 	strcpy(program_info.file_name, argv[1]);
 	
 	//Call assemble()
-	assemble(src_file);
+	assemble();
 	
 	return 0;
 }
 
 //This function invokes the actual algorithms.
-int assemble(FILE *src_file){
+int assemble(){
 	
 	//Call pass1()
-	pass1(src_file);
+	pass1();
 	
 	//Call pass2()
 	//No need for arguments. Because required files are already made.

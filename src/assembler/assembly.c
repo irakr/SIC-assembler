@@ -37,17 +37,10 @@
 #include "flags.h"
 
 //TODO...Change all the addresses and integer data variables to standard SIC types.
-
-/* Instruction format indicators
-#define FORMAT_0	0	//Simple SIC format
-#define FORMAT_1	1
-#define FORMAT_2	2
-#define FORMAT_3	3
-#define FORMAT_4	4
-
-#define COMMENT		5
-#define EMPTY		6
-*/
+			
+extern FILE *src_file;
+extern FILE *inter_file;
+extern FILE *list_file, *obj_prog_file;
 
 static SIC_InstnType formatize(char*, SIC_Source_line*);	//Local function	
 
@@ -78,57 +71,19 @@ int search_symtab(const char *symbol){
 	return NOTFOUND;
 }
 
-/*	Search OPTAB for 'opcode'	*/
+/*	Search OPTAB for 'opcode' just to check whether the opcode is a valid one or not	*/
 int search_optab(const char *opcode){
-	FILE *optab;
-	char op[10]="",addr[10]="";
-	optab = fopen("optab","r");	//OPTAB file
-	if(optab==(FILE*)0){
-		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
-		return -1;
-	}
+	char *code;
+	
 	if(opcode == (char*)0){	//If empty opcode
 		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
 		return -1;
 	}
-	/*	Compare with all opcodes	*/
-	do{
-		fscanf(optab,"%s",op);
-		fscanf(optab,"%s",addr);
-		if(strcmp(opcode,op)==0){
-			fclose(optab);
-			return FOUND;
-		}
-	}while(!feof(optab));
 	
-	//Invalid opcode
-	fclose(optab);
-	return NOTFOUND;
-}
-
-/*	Get hexcode for 'opcode' from OPTAB	*/
-char *get_hexcode(char *opcode){
-	FILE *optab=fopen("optab","r");
-	char op[10]="",*code=(char*)malloc(sizeof(char)*10);
-	if(optab==NULL){
-		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
-		return (char*)0;
-	}
-	if(opcode == (char*)0){	//If empty symbol
-		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
-		return (char*)0;
-	}
-	/*	Compare with all opcode	*/
-	do{
-		fscanf(optab,"%s",op);
-		fscanf(optab,"%s",code);
-		if(strcmp(opcode,op)==0){
-			fclose(optab);
-			return code;
-		}
-	}while(!feof(optab));
-	fclose(optab);
-	return (char*)0;
+	code = get_hexcode(opcode);
+	if(code == NULL)
+		return NOTFOUND;
+	return FOUND;
 }
 
 /*	Get address of 'symbol' from SYMTAB	*/
@@ -157,16 +112,18 @@ char *get_symbol_addr(char *symbol){
 }
 
 /*	This function reads an instruction from the input file	*/
-int read_line_src(FILE *f, SIC_Source_line *srcline){
+int read_line_src(SIC_Source_line *srcline){
 	int bytes = 0, t, temp;		//Keep track of the no. of characters being read from a line of the i/p file. We can use this data later...
 	char line[MAX_LINE_SIZE]="";
 	
-	if(!fgets(line, MAX_LINE_SIZE, f))
+	if(!fgets(line, MAX_LINE_SIZE, src_file))
 		return -1;
 	line[strlen(line)-1] = '\0';
 	strput(line, ' ', '\t');	//Replace all white spaces with single tabs
 	
+	#if DEBUG
 	printf("%s\t", line);
+	#endif
 	
 	//Tokenize into appropriate format
 	instn_type = formatize(line, srcline);
@@ -210,42 +167,42 @@ static SIC_InstnType formatize(char *line, SIC_Source_line *srcline){
 }
 
 /*	This function writes the examined instruction line to the intermediate file along with memory locations. */
-int write_line_intr(FILE *f, SIC_Interm_line *buff){
+int write_line_intr(SIC_Interm_line *buff){
 	int bytes=0;
-	bytes += fprintf(f,"%04X\t",buff->addr);
-	bytes += fprintf(f,"%s\t",buff->instr->label);
-	bytes += fprintf(f,"%s\t",buff->instr->opcode);
-	bytes += fprintf(f,"%s\n",buff->instr->operand);
-	fflush(f);
+	bytes += fprintf(inter_file,"%04X\t",buff->addr);
+	bytes += fprintf(inter_file,"%s\t",buff->instr->label);
+	bytes += fprintf(inter_file,"%s\t",buff->instr->opcode);
+	bytes += fprintf(inter_file,"%s\n",buff->instr->operand);
+	fflush(inter_file);
 	return bytes;
 }
 
 /*	Read Line from intermediate file	*/
-int read_line_intr(FILE *f, SIC_Interm_line *buff){
+int read_line_intr(SIC_Interm_line *buff){
 	int bytes = 0,t,temp;
-	bytes += ((t=fscanf(f,"%X",&temp))==EOF) ? 0 : t;
+	bytes += ((t=fscanf(inter_file,"%X",&temp))==EOF) ? 0 : t;
 	buff->addr.val = temp;
-	bytes += ((t=fscanf(f,"%s",buff->instr->label))==EOF) ? 0 : t;
-	bytes += ((t=fscanf(f,"%s",buff->instr->opcode))==EOF) ? 0 : t;
-	bytes += ((t=fscanf(f,"%s",buff->instr->operand))==EOF) ? 0 : t;
+	bytes += ((t=fscanf(inter_file,"%s",buff->instr->label))==EOF) ? 0 : t;
+	bytes += ((t=fscanf(inter_file,"%s",buff->instr->opcode))==EOF) ? 0 : t;
+	bytes += ((t=fscanf(inter_file,"%s",buff->instr->operand))==EOF) ? 0 : t;
 	return bytes;
 }
 
 /*	Write Line to listing file	*/
-int write_line_list(FILE *f, SIC_Listing_line *buff){
+int write_line_list(SIC_Listing_line *buff){
 	int bytes = 0;
-	bytes += fprintf(f,"%04X\t",buff->instr->addr);
-	bytes += fprintf(f,"\t%s",buff->instr->instr->label);
-	bytes += fprintf(f,"\t%s",buff->instr->instr->opcode);
-	bytes += fprintf(f,"\t%s",buff->instr->instr->operand);
+	bytes += fprintf(list_file,"%04X\t",buff->instr->addr);
+	bytes += fprintf(list_file,"\t%s",buff->instr->instr->label);
+	bytes += fprintf(list_file,"\t%s",buff->instr->instr->opcode);
+	bytes += fprintf(list_file,"\t%s",buff->instr->instr->operand);
 	
 	//If opcode is anyone of the following: RESW or RESB or START or END. then don't write opcode to listing file.
 	if(!(!strcmp(buff->instr->instr->opcode, "RESW") || !strcmp(buff->instr->instr->opcode, "START") || \
 		!strcmp(buff->instr->instr->opcode, "START") ||	!strcmp(buff->instr->instr->opcode, "END")))
-		bytes += fprintf(f,"\t%s\n",buff->obj_code);
+		bytes += fprintf(list_file,"\t%s\n",buff->obj_code);
 	else
-		fprintf(f,"\n");
-	fflush(f);
+		fprintf(list_file,"\n");
+	fflush(list_file);
 	return bytes;
 }
 

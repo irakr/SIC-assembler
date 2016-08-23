@@ -37,12 +37,9 @@
 #include <ctype.h>
 #include "optab.h"
 
-#define ASCII_3	51
-#define ASCII_4 52
-
 //Generates the 'SIC_Optab optab' table from the file 'optab.tab'
 void build_optab() {
-	FILE *optab_f = fopen("optab.tab", "r");
+	FILE *optab_f = fopen("/etc/sasm/optab.tab", "r");
 	char line[256];
 	int valid_lines = 0, i=0;
 	
@@ -95,8 +92,8 @@ void build_optab() {
 		//Opcode part
 		temp = strtok(NULL, "\t");
 		if(temp) {
-			optab[i].opcode = (char*)malloc(sizeof(char)*strlen(temp));
-			strcpy(optab[i].opcode, temp);
+			optab[i].hexcode = (char*)malloc(sizeof(char)*strlen(temp));
+			strcpy(optab[i].hexcode, temp);
 		}
 		
 		++i;
@@ -110,13 +107,21 @@ void build_optab() {
 SIC_InstnType validate(SIC_Source_line *srcline) {
 	int i;
 	
+	char *optr = srcline->opcode;	// Maybe a '+' symbol prefix in opcode
+	if(*optr == '+')
+		optr++;
+	
 	//Find the entry for the current instruction in the optab
 	for(i=0; i<tab_size; i++) {
-		if(strstr(optab[i].mnemonic, srcline->opcode))
+		if(strstr(optab[i].mnemonic, optr))
 			break;
 	}
 	if(i >= tab_size) {	//Not found
+		
+		#if DEBUG
 		printf("[ Maybe directive ]");
+		#endif
+		
 		return MAYBE_DIRECTIVE;
 	}
 	
@@ -127,29 +132,58 @@ SIC_InstnType validate(SIC_Source_line *srcline) {
 	}
 	else					//Format : 1 or 2
 		format = (optab[i].format[0] == '1') ? FORM1 : FORM2;
+	#if DEBUG
 	printf("[ Format %d ]", format);
+	#endif
 	
+	return format;
 }
 
-//Testing
+
+/*	Get hexcode for 'opcode' from OPTAB	*/
+char *get_hexcode(char *opcode){
+	char *code=(char*)malloc(sizeof(char)*10);
+	int i;
+	
+	if(opcode == (char*)0){	//If empty symbol
+		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
+		return (char*)0;
+	}
+	
+	//Linear search the opcode in optab
+	for(i=0; i<tab_size; i++) {
+		if(strstr(optab[i].mnemonic, opcode))	//found
+			return optab[i].hexcode;
+	}
+	if(i >= tab_size)	//not found
+		return NULL;
+}
+
+/*	Testing
 int main(){
 	build_optab();
 	FILE *fp = fopen("test.sic", "r");
 	SIC_Source_line srcline;
 	while(!feof(fp)) {
-		if(!read_line_src(fp, &srcline)) {
+		if(!read_line_src(&srcline)) {
 			if(instn_type == COMMENT)
+				#if DEBUG
 				printf("[ Comment line ]");
+				#endif
 			else if(instn_type == EMPTY)
+				#if DEBUG
 				printf("[ Empty line ]");
+				#endif
 			else
 				validate(&srcline);
 		}
+		#if DEBUG
 		printf("\n");
+		#endif
 	}
 	return 0;
 }
-
+*/
 
 
 

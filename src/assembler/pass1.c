@@ -39,11 +39,14 @@
 #define SINGLEQUOTE 0x27	//The symbol '
 
 extern SIC_Prog_info program_info;
+extern FILE *src_file;
+extern FILE *inter_file;
+extern FILE *list_file, *obj_prog_file;
 
 
 /*	Pass-1 assembly algorithm	*/
-void pass1(FILE *src_file) {
-	FILE *intr_file, *symtab;
+void pass1() {
+	FILE *symtab;
 	SIC_Source_line src_line;		//Lines read from source file
 	SIC_Interm_line intr_line;	//Lines written to intermediate file
 	
@@ -58,17 +61,18 @@ void pass1(FILE *src_file) {
 
 	//Symbol table for the current source file.
 	if((symtab = fopen(".symtab","w")) == NULL){
-		fprintf(stderr,"\nError: Could not open SYMTAB.\n");
+		fprintf(stderr, "\nError: Could not open SYMTAB.\n");
 		exit(EXIT_FAILURE);
 	}
 	
 	//Generating output(intermediate) filename
-	if((intr_file=fopen(".intermediate","w")) == NULL){
-		fprintf(stderr,"Error: Could not open intermediate file\n");
+	if((inter_file=fopen(".intermediate","w")) == NULL){
+		fprintf(stderr, "Error: Could not open intermediate file\n");
 		exit(1);
 	}
 	
-	read_line_src(src_file, &src_line);
+	//@Start reading
+	read_line_src(&src_line);
 	strcpy(program_info.prog_name, src_line.label);	//Get program name(or procedure name)
 
 	intr_line.instr = &src_line;	//Partial intermediate line constructed
@@ -76,28 +80,28 @@ void pass1(FILE *src_file) {
 #define start_addr	start_addr.val
 
 	/* opcode=="START"	*/
-	if(strcmp(src_line.opcode,"START")==0){
+	if(strcmp(src_line.opcode,"START")==0) {
 		uint16_t temp;
 		sscanf(src_line.operand, "%x", &temp);
 		program_info.start_addr = temp;
 		locctr = program_info.start_addr;
 		intr_line.addr.val = temp;
-		write_line_intr(intr_file, &intr_line);	//Define these two functions
-		read_line_src(src_file, &src_line);	//Second line onwards
+		write_line_intr(&intr_line);	//Define these two functions
+		read_line_src(&src_line);	//Second line onwards
 	}
 	else	locctr = 0;
 
 	/*	Read rest of the lines	*/	
-	while(strcmp(src_line.opcode,"END")!=0){
+	while(strcmp(src_line.opcode,"END") != 0) {
 
 		//If comment line
-		if(strcmp(src_line.label[0], '.') == 0){
-			read_line_src(src_file, &src_line);
+		if(src_line.label[0] =='.') {
+			read_line_src(&src_line);
 			continue;
 		}
 
 		inc = 0;	//increment value for locctr
-		if(strcmp(src_line.label,"-")!=0){//If there is something in the label field
+		if(src_line.label[0] != 0){//If there is something in the label field
 			if(search_symtab(src_line.label) == FOUND){	//Symbol already defined
 				fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
 				fprintf(stderr,"\nError: Symbol '%s' is already defined.\n",src_line.label);
@@ -106,7 +110,7 @@ void pass1(FILE *src_file) {
 				fprintf(symtab, "%s\t%X\n", src_line.label, locctr);
 			}//if search_symtab()
 			fflush(symtab);
-		}//if label is not empty(Not an error)
+		}//end if label is not empty(Not an error)
 		//else	fprintf(stderr,"\nEmpty label.\n");
 		
 		/*	Search OPTAB for opcode	*/
@@ -123,7 +127,7 @@ void pass1(FILE *src_file) {
 			inc = atoi(src_line.operand);
 		else if(strcmp(src_line.opcode,"BYTE")==0){
 			if(src_line.operand[0] == 'C')//For character constants
-				const_len = strlen(index(src_line.operand,SINGLEQUOTE)) - 2;		//Excluding ' from the string 'EOF'
+				const_len = strlen(index(src_line.operand, SINGLEQUOTE)) - 2;		//Excluding ' from the string 'EOF'
 			else if(src_line.operand[0] == 'X')//For hexadecimal constants
 				const_len = 1;
 			else{
@@ -144,16 +148,16 @@ void pass1(FILE *src_file) {
 		//Only change address member of intr_line. That's why I used the 2nd member as a pointer to src_line.
 		intr_line.addr.val = locctr;
 		
-		write_line_intr(intr_file, &intr_line);//Write line to intermediate file
+		write_line_intr(&intr_line);//Write line to intermediate file
 		locctr += inc;	//Update locctr now
-		read_line_src(src_file, &src_line);	//Read next input line
+		read_line_src(&src_line);	//Read next input line
 		//reset_flags();	//Reset all flags
 	}//while()
 	intr_line.addr.val = locctr;
-	write_line_intr(intr_file, &intr_line);	//Write last line
+	write_line_intr(&intr_line);	//Write last line
 	program_info.prog_len = (locctr - program_info.start_addr) + 1;
 	//printf("\nLength of program = %d(DEC) or %X(HEX)\n",prog_len,prog_len);
 	fclose(src_file);
 	fclose(symtab);
-	fclose(intr_file);
+	fclose(inter_file);
 }

@@ -34,7 +34,7 @@
 #ifndef FLAGS_H
 #define FLAGS_H
 
-//Error flag
+//Error flags
 typedef enum{OK=0x00, EMPTY_OPCODE, INVALID_OPCODE, INVALID_LABEL, DUPLICATE_LABEL, INVALID_OPERAND} SIC_AsmError;
 SIC_AsmError asm_error;
 

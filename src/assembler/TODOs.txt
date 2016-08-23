@@ -7,3 +7,5 @@
  - After reading a statement, it can be then broken into tokens and compared against the possible
    formats conforming to the SIC or SIC/XE standards, i.e., format-1, format-2, etc.
  - Similar changes may also be made in other read and write functions in the file assembly.c.
+ 
+ 2) Make the file pointers global.
