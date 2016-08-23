@@ -7,9 +7,9 @@ Just execute the 'install.sh' script. When asked for sudo password, enter it.
 # How to use
 - Write any program in SIC(not SIC/XE) assembly language first and save it with an extension 'xyz.sic'. Eg: sum.sic
 - After assembling, the assembler will produce three important files that we are interested in:
-  1) Symbol table named '.symtab'
-  2) Intermediate file named '.intermediate'
-  3) Listing file named '.listing'
+  - Symbol table named '.symtab'
+  - Intermediate file named '.intermediate'
+  - Listing file named '.listing'
   
 - In linux, a filename starting with a period(.) is a hidden file. So the above 3 files may not be visible in the GUI-based
   file-manager like 'nautilus'(if appropriate configurations are not done). So, I recommend using CLI to view them. You can simply
