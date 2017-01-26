@@ -36,7 +36,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "../sic.h"
+#include "sic.h"
+#include "flags.h"
 
 #ifndef ASSEMBLY_H_
 #define ASSEMBLY_H_
@@ -45,18 +46,16 @@
 #define FOUND		0
 #define NOTFOUND	-1
 
-// ADDED FOR GITHUB PURPOSE
+// This macro verifies the file extension of the source file.
+#define FILE_EXTENSION_SIC(_filename_) 	(!strcmp(rindex(_filename_,'.'),".sic"))
 
 // Macros for source program related purpose
-#define LABEL_SIZE	7
-#define OPCODE_SIZE	7
+#define LABEL_SIZE		7
+#define OPCODE_SIZE		7
 #define OPERAND_SIZE	7
 #define OBJCODE_SIZE	10
 #define MAX_LINE_SIZE	128	//Max no of characters per source line
 #define MAX_NAME_LEN	7
-
-//Make it '1' for debug codes to be generated.
-#define DEBUG	1
 
 /*	Macros for object program
 #define HEADER_SIZE	

@@ -1,5 +1,5 @@
 #	A BASIC MAKEFILE
-#This is a test makefile. The standard name convention for makefiles 
+#This is a test makefile(a.k.a. a practice makefile). The standard name convention for makefiles 
 #is 'Makefile', if you run the make command as 'make' only.
 #The make command format is:
 #	$ make [OPTION]... [TARGET]...

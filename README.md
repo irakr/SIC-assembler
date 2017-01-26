@@ -11,10 +11,7 @@ Just execute the 'install.sh' script. When asked for sudo password, enter it.
   - Intermediate file named '.intermediate'
   - Listing file named '.listing'
   
-- In linux, a filename starting with a period(.) is a hidden file. So the above 3 files may not be visible in the GUI-based
-  file-manager like 'nautilus'(if appropriate configurations are not done). So, I recommend using CLI to view them. You can simply
-  use the 'll' command to list all files in the directory(including hidden files). You will be able to see those 3 files and check
-  them out.
+- Note that the names of the three files mentioned above start with a period(.) character which means they are hidden files.
 #
 	THAT's IT FOR NOW !!!!!
 	THANKS FOR TRYING IT OUT!

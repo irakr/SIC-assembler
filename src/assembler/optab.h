@@ -31,7 +31,7 @@
  * Contains runtime optab data structured. The optab defined in this file is a hash table.
  */
 
-#include <stdint.h>
+#include <sys/types.h>
 #include "assembly.h"
 #include "flags.h"
 

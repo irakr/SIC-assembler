@@ -1,3 +1,5 @@
+# CURRENTLY OF NO USE
+
 #This is the main makefile that invokes all other makefiles in every sub-directories.
 
 #Global variables

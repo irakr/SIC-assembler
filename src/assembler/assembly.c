@@ -89,7 +89,7 @@ int search_optab(const char *opcode){
 /*	Get address of 'symbol' from SYMTAB	*/
 char *get_symbol_addr(char *symbol){
 	FILE *symtab=fopen(".symtab","r");
-	char sym[10]="",*addr=(char*)malloc(sizeof(char)*10);
+	char sym[10]="", *addr=(char*)malloc(sizeof(char)*10);
 	if(symtab==NULL){
 		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
 		return (char*)0;

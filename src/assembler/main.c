@@ -41,10 +41,11 @@
 #include "assembly.h"
 #include "optab.h"
 
-#if DEBUG
+#ifdef DEBUG
 #include <unistd.h>
 #endif
 
+// This macro is not fully implemented yet. Currently it only builds optab. Lot more TODO
 #define INIT_ASM()	build_optab();
 
 /*	All global data		*/
@@ -58,23 +59,33 @@ int assemble();
 
 int main(int argc, char *argv[]){
 	
-	
 	/*	DEBUG	*/
-	#if DEBUG
+	#ifdef DEBUG
 	printf("Current working directory: %s\n", (char*)get_current_dir_name());	//print working directory
 	#endif
 	
 	INIT_ASM();
 	
 	if(argc <= 1){
-		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
-		fprintf(stderr,"\nError: No source filename provided\n");
+		//fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
+		fprintf(stderr,"\n[Error: No source filename provided]\n");
 		exit(EXIT_FAILURE);
 	}
-	//Input file
-	if((src_file = fopen(argv[1],"r")) == NULL){
-		fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
-		fprintf(stderr,"\nError: No file exists with the name '%s'\n",argv[1]);
+	else if(argc == 2){
+		//Check file extension and open input file
+		if(!FILE_EXTENSION_SIC(argv[1])) {
+			//fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
+			fprintf(stderr,"\n[Error: Invalid source filename]\n");
+			exit(EXIT_FAILURE);
+		}
+		if((src_file = fopen(argv[1],"r")) == NULL){
+			//fprintf(stderr,"(%s : %d)\n", __FILE__, __LINE__);
+			fprintf(stderr,"\n[Error: No file exists with the name '%s']\n",argv[1]);
+			exit(EXIT_FAILURE);
+		}
+	}
+	else {
+		fprintf(stderr, "[Error: Please provide only one source file]\n");
 		exit(EXIT_FAILURE);
 	}
 	

@@ -95,7 +95,7 @@ void pass1() {
 	while(strcmp(src_line.opcode,"END") != 0) {
 
 		//If comment line
-		if(src_line.label[0] =='.') {
+		if(instn_type == COMMENT) {
 			read_line_src(&src_line);
 			continue;
 		}
