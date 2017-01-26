@@ -1,6 +1,10 @@
 # SIC-assembler
 An assembler emulator for a hypothetical machine called SIC(Simplified Instructional Computer)
 
+#TODOs:
+- Currently only the assembler module is implemented. The loader and runtime modules are not yet implemented.
+- SIC/XE features should also be included later.
+
 # How to install
 Just execute the 'install.sh' script. When asked for sudo password, enter it.
 
